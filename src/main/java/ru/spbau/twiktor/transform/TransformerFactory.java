@@ -15,6 +15,7 @@ public class TransformerFactory {
 
     TransformerFactory() {
         transformers.put("tomita", new TomitaTransformer());
+        transformers.put("simple", new SimpleTransformer());
     }
 
     public TwitTransformer getTransformer(String name) {
