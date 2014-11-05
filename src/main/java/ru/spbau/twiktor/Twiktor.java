@@ -5,6 +5,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.spbau.twiktor.transform.TwitTransformer;
+import ru.spbau.twiktor.transform.TwitTransformerImpl;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -13,7 +15,8 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 
 public class Twiktor {
-	private static Logger LOG = LoggerFactory.getLogger(Twiktor.class);
+	private final static Logger LOG = LoggerFactory.getLogger(Twiktor.class);
+	private final static TwitTransformer TRANSFORMER = new TwitTransformerImpl();
 	
 	public static void main(String[] args) throws TwitterException {
 		if (args.length == 0) {
@@ -22,16 +25,28 @@ public class Twiktor {
 		}
 		
 		long usedUserId = getUserId(args);
-		LOG.info("User Id to process: {}", usedUserId);
+		LOG.info("User Id to process: '{}'", usedUserId);
 		
 		Twitter twitter = getTwitter();
 		long authUserId = twitter.getId();
-		LOG.info("Twitter created. Used user id is {}", authUserId);
+		LOG.info("Twitter created. Used user id is '{}'", authUserId);
 		
 		Status status = getTwitText(twitter, usedUserId);
-		LOG.info("Used status text is {}", status.getText());
+		String statusText = getText(status);
+		LOG.info("Used status text is '{}'", statusText);
 		
-		// TODO convert status and post it
+		String newText = TRANSFORMER.tranform(statusText);
+		LOG.info("New text is '{}'", newText);
+		
+		twitter.updateStatus(newText);
+	}
+
+	private static String getText(Status status) {
+		int columnPos = status.getText().indexOf(':');
+		if (columnPos == -1) {
+			return status.getText();
+		}
+		return status.getText().substring(columnPos + 1);
 	}
 
 	// TODO rewrite
