@@ -15,7 +15,7 @@ public class TwiktorRunner {
 			LOG.error("Twiktor needs at least one user name as argument");
 			System.exit(0);
 		}
-		Twiktor twiktor = new Twiktor(new TwitTransformerImpl(), args, loadAccessToken());
+//		Twiktor twiktor = new Twiktor(new TwitTransformerImpl(), args, loadAccessToken());
 	}
 
 	private static AccessToken loadAccessToken() {

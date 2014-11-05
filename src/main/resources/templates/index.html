@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Shop Item - Start Bootstrap Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="static/css/shop-item.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav  class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Twiktor</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <!--<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">-->
+                <!--<ul class="nav navbar-nav">-->
+                    <!--<li>-->
+                        <!--<a href="#">About</a>-->
+                    <!--</li>-->
+                    <!--<li>-->
+                        <!--<a href="#">Services</a>-->
+                    <!--</li>-->
+                    <!--<li>-->
+                        <!--<a href="#">Contact</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <row></row>
+    <!-- Page Content -->
+    <div style="margin-top: 20px" class="container">
+        <h2>Ваши боты</h2>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Логин</th>
+                <th>Аккаунт</th>
+                <th>Подписчиков</th>
+                <th>Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% model.botHandler.getAllTwiktors().each { %>
+            <tr>
+                <td>${it.id}</td>
+                <td>${it.login}</td>
+                <td><a href="https://twitter.com/${it.login}">https://twitter.com/${it.login}</a></td>
+                <td>${it.followersCount}</td>
+                <td style="width: 10%">
+                    <button id="addBtn" class="btn btn-primary" onclick="\$.post('<%= it.running ? 'stop' : 'run' %>' +
+                        '${'?id='+it.id}', function( data ) {
+                    window.location.reload()
+                })">
+                        <%= it.running ? 'Остановить' : 'Запустить' %>
+                    </button>
+                </td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+
+
+        <div style="margin-top: 55px" class="form-inline">
+            <div id="addApp" class="form-inline add-app-form" style="display: block;">
+                <input id="login" class="form-control" style="width: 40%" type="text" placeholder="Логин">
+                <input id="password" class="form-control" style="width: 40%" type="text" placeholder="Пароль">
+                <button style="margin-left: 20px; width: 15%" class="btn btn-primary"
+                        onclick='\$.post("/add-bot?login=" + \$("#login").val() +"&\$password=" +  \$("#password").val(), function( data ) {
+                    window.location.reload()
+                })'>Добавить</button>
+            </div>
+        </div>
+
+
+
+        <div style="margin-top: 55px" class="form-inline">
+            <div id="addApp" class="form-inline add-app-form" style="display: block;">
+                <textarea id="message" class="form-control" style="width: 70%" placeholder="Текст"></textarea>
+                <button style="margin-left: 20px; width: 25%" class="btn btn-primary"
+                        onclick='\$.post("/send-all?message=" + \$("#message").val())'>Отправить всемs</button>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- /.container -->
+
+    <div class="container">
+
+        <!--<hr>-->
+
+        <!--&lt;!&ndash; Footer &ndash;&gt;-->
+        <!--<footer>-->
+            <!--<div class="row">-->
+                <!--<div class="col-lg-12">-->
+                    <!--<p>Copyright &copy; Your Website 2014</p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</footer>-->
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="static/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="static/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
