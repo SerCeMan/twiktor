@@ -1,13 +1,14 @@
 package ru.spbau.twiktor;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.spbau.twiktor.transform.TwitTransformer;
-import ru.spbau.twiktor.transform.TwitTransformerImpl;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -18,89 +19,52 @@ import twitter4j.auth.AccessToken;
 
 public class Twiktor {
 	private final static Logger LOG = LoggerFactory.getLogger(Twiktor.class);
-	private final static TwitTransformer TRANSFORMER = new TwitTransformerImpl();
-	private static Twitter twitter;
+	private final TwitTransformer transformer;
+	private final Twitter twitter;
+	private final String[] accounts;
+	private Timer timer;
+	private boolean isRunning;
 	
-	public static void main(String[] args) throws IllegalStateException, TwitterException {
-		twitter = getTwitter();
-		
+	public Twiktor(TwitTransformer transformer, String[] accounts, AccessToken accessToken) throws IllegalStateException, TwitterException {
+		this.transformer = transformer;
+		this.accounts = accounts;
+		twitter = getTwitter(accessToken);
 		long authUserId = twitter.getId();
 		LOG.info("Twitter created. Used user id is '{}'", authUserId);
-		
-		while(true) {
-			try {
-				run(args);
-				Thread.sleep(10000);
-			} catch (TwitterException e) {
-				LOG.debug(e.getMessage());
-			} catch (InterruptedException e) {
-				LOG.debug(e.getMessage());
-			}
-		}
+		timer = new Timer();
+		timer.schedule(new PostStatusTask(), 0, 30000);
+		isRunning = true;
+	}
+	
+	public boolean isRunning() {
+		return isRunning;
 	}
 
-	private static void run(String[] args) throws TwitterException {
-		if (args.length == 0) {
-			LOG.error("Twiktor needs at least one userId as argument");
-			System.exit(0);
+	public void start() {
+		if(isRunning) {
+			return;
 		}
-		
-		long usedUserId = getUserId(args);
-		LOG.info("User Id to process: '{}'", usedUserId);
-		Status status = getTwit(usedUserId);
-		String statusText = getText(status);
-		LOG.info("Used status text is '{}'", statusText);
-		
-		String newText = TRANSFORMER.tranform(statusText);
-		if(newText.length() > 140) {
-			newText.substring(0, 140);
+		timer = new Timer();
+		timer.schedule(new PostStatusTask(), 0, 30000);
+		isRunning = true;
+	}
+	
+	public void stop() {
+		if(!isRunning) {
+			return;
 		}
-		LOG.info("New text is '{}'", newText);
-		
-
-		long inReply = status.getId();
-		String userNameToReply = getUserName(status);
-		StatusUpdate update = new StatusUpdate("@" + userNameToReply + " " + newText);
-		update.setInReplyToStatusId(inReply);
-		twitter.updateStatus(update);
-		
-		Status newStatus = twitter.updateStatus(newText);
+		timer.cancel();
+		timer.purge();
+		timer = null;
+	}
+	
+	public void postStatus(String text) throws TwitterException {
+		Status newStatus = twitter.updateStatus(transformer.tranform(text));
 		LOG.info("Status updated. Id is '{}'", newStatus.getId());
 	}
 
-	private static String getUserName(Status status) {
-		if(!status.isRetweet()) {
-			return status.getUser().getScreenName();
-		}
-		return status.getUserMentionEntities()[0].getScreenName();
-	}
-
-	private static String getText(Status status) {
-		if(!status.isRetweet()) {
-			return status.getText();
-		}
-		int columnPos = status.getText().indexOf(':');
-		return status.getText().substring(columnPos + 1);
-	}
-
-	// TODO rewrite
-	private static Status getTwit(long usedUserId) throws TwitterException {
-		// get random status from last 1000
-		Paging paging = new Paging(1, 1000);
-		List<Status> statusList = twitter.getUserTimeline(usedUserId, paging);
-		Status status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
-		return status;
-	}
-
-	private static long getUserId(String[] args) throws TwitterException {
-		int userIdx = ThreadLocalRandom.current().nextInt(args.length);
-		long userId = twitter.showUser(args[userIdx]).getId();
-		return userId;
-	}
-
-	private static Twitter getTwitter() {
+	private static Twitter getTwitter(AccessToken accessToken) {
 		TwitterFactory factory = new TwitterFactory();
-		AccessToken accessToken = loadAccessToken();
 		Twitter twitter = factory.getInstance();
 		// TODO load secret
 		twitter.setOAuthConsumer("ANV7A3SBGxsUz1z4LRETSfQCZ",
@@ -109,10 +73,68 @@ public class Twiktor {
 		return twitter;
 	}
 
-	// TODO load token
-	private static AccessToken loadAccessToken() {
-		String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
-		String tokenSecret = "Y57QmqGqfh4pjkwynKIrLwcycXKNWxSDoXpom4HcvzAJ7";
-		return new AccessToken(token, tokenSecret);
+	private class PostStatusTask extends TimerTask {
+		
+		@Override
+		public void run() {
+			try {
+				long usedUserId;
+				usedUserId = getUserId(accounts);
+				LOG.info("User Id to process: '{}'", usedUserId);
+				Status status = getTwit(usedUserId);
+				String statusText = getText(status);
+				LOG.info("Used status text is '{}'", statusText);
+				
+				String newText = transformer.tranform(statusText);
+				if(newText == null) {
+					return;
+				}
+				if(newText.length() > 140) {
+					newText.substring(0, 140);
+				}
+				LOG.info("New text is '{}'", newText);
+				
+				long inReply = status.getId();
+				String userNameToReply = getUserName(status);
+				StatusUpdate update = new StatusUpdate("@" + userNameToReply + " " + newText);
+				update.setInReplyToStatusId(inReply);
+				twitter.updateStatus(update);
+				
+				Status newStatus = twitter.updateStatus(newText);
+				LOG.info("Status updated. Id is '{}'", newStatus.getId());
+			} catch (TwitterException e) {
+				LOG.error(e.getMessage());
+			}
+		}
+		
+		private String getUserName(Status status) {
+			if(!status.isRetweet()) {
+				return status.getUser().getScreenName();
+			}
+			return status.getUserMentionEntities()[0].getScreenName();
+		}
+
+		private String getText(Status status) {
+			if(!status.isRetweet()) {
+				return status.getText();
+			}
+			int columnPos = status.getText().indexOf(':');
+			return status.getText().substring(columnPos + 1);
+		}
+
+		private Status getTwit(long usedUserId) throws TwitterException {
+			// get random status from last 1000
+			Paging paging = new Paging(1, 1000);
+			List<Status> statusList = twitter.getUserTimeline(usedUserId, paging);
+			Status status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
+			return status;
+		}
+
+		private long getUserId(String[] args) throws TwitterException {
+			int userIdx = ThreadLocalRandom.current().nextInt(args.length);
+			long userId = twitter.showUser(args[userIdx]).getId();
+			return userId;
+		}
+
 	}
 }
