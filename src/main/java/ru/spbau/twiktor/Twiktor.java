@@ -68,16 +68,16 @@ public class Twiktor {
 		AccessToken accessToken = loadAccessToken();
 		Twitter twitter = factory.getInstance();
 		// TODO load secret
-		twitter.setOAuthConsumer("UqpYMk89TqDN6aAqZHbm0FAf5",
-				"HmtTMKzCb3DxCfzwgj4Ju1QnsAjaNaoST5fsIRVv3jIHxVUrMl");
+		twitter.setOAuthConsumer("ANV7A3SBGxsUz1z4LRETSfQCZ",
+				"n82pOOT3vP9CJtRPrtm0qm7Y5DG2XXogteD1sQDezAGPGsI3bk");
 		twitter.setOAuthAccessToken(accessToken);
 		return twitter;
 	}
 
 	// TODO load token
 	private static AccessToken loadAccessToken() {
-		String token = "2153109427-xS2HEtV8PlwopEglylOg4UaSosuiDX3Kqfn98Pr";
-		String tokenSecret = "aOIl2e5dqmSF9gzV2wMA4CjyITOfIq3wiVK4wCCiUcO54";
+		String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
+		String tokenSecret = "Y57QmqGqfh4pjkwynKIrLwcycXKNWxSDoXpom4HcvzAJ7";
 		return new AccessToken(token, tokenSecret);
 	}
 }
