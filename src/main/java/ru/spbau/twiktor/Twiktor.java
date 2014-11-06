@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.spbau.twiktor.transform.TwitTransformer;
 import ru.spbau.twiktor.transform.TwitTransformerSynonymizationImpl;
+import ru.spbau.twiktor.utils.ThreadUtils;
 import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -100,6 +101,7 @@ public class Twiktor {
 		@Override
 		public void run() {
 			try {
+                ThreadUtils.sleep(0, 5000); // случайная пауза от 0 до 5с
 				String tag = tags[ThreadLocalRandom.current().nextInt(tags.length)];
 				LOG.info("Tag to process: '{}'", tag);
 				Status status = getTwit(tag);
@@ -118,13 +120,17 @@ public class Twiktor {
 
                 boolean reply = ThreadLocalRandom.current().nextBoolean();
 
+                if(needToFollow()) {
+                    twitter.createFriendship(status.getUser().getId());
+                }
+
                 if(reply) {
                     replyTwit(status, newText);
                 } else {
                     Status newStatus = twitter.updateStatus(newText);
                     LOG.info("Status updated. Id is '{}'", newStatus.getId());
                 }
-			} catch (TwitterException e) {
+			} catch (Exception e) {
 				LOG.error(e.getMessage());
 			}
 		}
@@ -159,4 +165,8 @@ public class Twiktor {
 			return status;
 		}
 	}
+
+    private boolean needToFollow() {
+        return ThreadLocalRandom.current().nextInt(10) == 0;
+    }
 }

@@ -13,7 +13,6 @@ import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,14 +24,12 @@ public class BotHandler {
     private final static Logger LOG = LoggerFactory.getLogger(BotHandler.class);
 
     private final ConcurrentHashMap<Integer, Twiktor> bots = new ConcurrentHashMap<>();
-//    private final String[] tags = {"#путин", "#россия", "#донбас"};
     private final List<String> themes = new ArrayList<>();
 
     @Inject
     Authorizator authorizator;
 
     public BotHandler() {
-        themes.addAll(asList("Ситуация на украине"));
         try {
             String login = "WiktorGrishin";
             String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
@@ -94,5 +91,13 @@ public class BotHandler {
 
     public void addTheme(String theme) {
         themes.add(theme);
+        String[] tags = themes.toArray(new String[]{});
+        for(Twiktor tw: bots.values()) {
+        	tw.setTags(tags);
+        }
+    }
+
+    public void delTheme(String theme) {
+        themes.remove(theme);
     }
 }
