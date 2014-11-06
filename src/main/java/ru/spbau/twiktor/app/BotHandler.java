@@ -32,17 +32,8 @@ public class BotHandler {
     Authorizator authorizator;
 
     public BotHandler() {
-        try {
-            loadThemes();
-            String login = "WiktorGrishin";
-            String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
-            String tokenSecret = "Y57QmqGqfh4pjkwynKIrLwcycXKNWxSDoXpom4HcvzAJ7";
-            Twiktor twiktor = new Twiktor(login, createTrasformer(), themes.toArray(new String[]{}),
-                    new AccessToken(token, tokenSecret));
-            bots.put(twiktor.getId(), twiktor);
-        } catch (TwitterException e) {
-            LOG.error("Imposible to create Twiktor ", e);
-        }
+        loadThemes();
+        loadBots();
     }
 
     private void loadThemes() {
@@ -50,6 +41,28 @@ public class BotHandler {
             InputStreamReader reader = new InputStreamReader(input);
             Scanner scanner = new Scanner(reader);
             scanner.forEachRemaining(themes::add);
+        } catch (Exception e) {
+            LOG.error("Error load themes ", e);
+        }
+    }
+
+    private void loadBots() {
+        try(InputStream input = new FileInputStream("twiktors.txt")) {
+            InputStreamReader reader = new InputStreamReader(input);
+            Scanner scanner = new Scanner(reader);
+            int count = Integer.valueOf(scanner.nextLine());
+            for(int i = 0; i < count; i++) {
+                String login = scanner.nextLine();
+                String token = scanner.nextLine();
+                String tokenSecret = scanner.nextLine();
+                try {
+                    Twiktor twiktor = new Twiktor(login, createTrasformer(), themes.toArray(new String[]{}),
+                            new AccessToken(token, tokenSecret));
+                    bots.put(twiktor.getId(), twiktor);
+                } catch (Exception e) {
+                    LOG.info("Error loading " + login);
+                }
+            }
         } catch (Exception e) {
             LOG.error("Error load themes ", e);
         }
@@ -71,6 +84,7 @@ public class BotHandler {
         } catch (TwitterException e) {
             LOG.error("Imposible to create Twiktor ", e);
         }
+        saveTwiktors();
     }
 
     private TwitTransformer createTrasformer() {
@@ -115,6 +129,21 @@ public class BotHandler {
         try(FileOutputStream out = new FileOutputStream("themes.txt")) {
             PrintWriter writer = new PrintWriter(out);
             themes.forEach(writer::println);
+            writer.flush();
+        } catch (Exception e) {
+            LOG.error("Error saving themes ", e);
+        }
+    }
+
+    private void saveTwiktors() {
+        try(FileOutputStream out = new FileOutputStream("twiktors.txt")) {
+            PrintWriter writer = new PrintWriter(out);
+            writer.println(bots.values().size());
+            bots.values().forEach(bot -> {
+                writer.println(bot.getLogin());
+                writer.println(bot.getAccessToken().getToken());
+                writer.println(bot.getAccessToken().getTokenSecret());
+            });
             writer.flush();
         } catch (Exception e) {
             LOG.error("Error saving themes ", e);

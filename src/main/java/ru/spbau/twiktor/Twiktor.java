@@ -187,6 +187,14 @@ public class Twiktor {
 		}
 	}
 
+    public AccessToken getAccessToken() {
+        try {
+            return twitter.getOAuthAccessToken();
+        } catch (TwitterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private boolean needToFollow() {
         return ThreadLocalRandom.current().nextInt(10) == 0;
     }
