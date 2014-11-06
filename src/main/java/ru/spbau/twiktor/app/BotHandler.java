@@ -96,4 +96,8 @@ public class BotHandler {
         	tw.setTags(tags);
         }
     }
+
+    public void delTheme(String theme) {
+        themes.remove(theme);
+    }
 }
