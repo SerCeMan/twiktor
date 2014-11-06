@@ -7,9 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.spbau.twiktor.Twiktor;
+import ru.spbau.twiktor.transform.SearchSimularTransformer;
 import ru.spbau.twiktor.transform.TwitTransformer;
-import ru.spbau.twiktor.transform.TwitTransformerImpl;
-import ru.spbau.twiktor.transform.TwitTransformerSynonymizationImpl;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
@@ -21,7 +20,7 @@ public class BotHandler {
     private final static Logger LOG = LoggerFactory.getLogger(BotHandler.class);
 
     private final ConcurrentHashMap<Integer, Twiktor> bots = new ConcurrentHashMap<>();
-    private final String[] people = {"navalny", "MedvedevRussia", "urgantcom", "durov"};
+    private final String[] tags = {"#путин", "#россия", "#донбас"};
 
     @Inject
     Authorizator authorizator;
@@ -31,7 +30,7 @@ public class BotHandler {
             String login = "WiktorGrishin";
             String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
             String tokenSecret = "Y57QmqGqfh4pjkwynKIrLwcycXKNWxSDoXpom4HcvzAJ7";
-            Twiktor twiktor = new Twiktor(login, createTrasformer(), people,
+            Twiktor twiktor = new Twiktor(login, createTrasformer(), tags,
                     new AccessToken(token, tokenSecret));
             bots.put(twiktor.getId(), twiktor);
         } catch (TwitterException e) {
@@ -46,7 +45,7 @@ public class BotHandler {
     public void addBot(String login, String oauthVerifier) {
         try {
             AccessToken accessToken = authorizator.comleteAuth(login, oauthVerifier);
-            Twiktor twiktor = new Twiktor(login, createTrasformer(), people, accessToken);
+            Twiktor twiktor = new Twiktor(login, createTrasformer(), tags, accessToken);
             bots.put(twiktor.getId(), twiktor);
         } catch (TwitterException e) {
             LOG.error("Imposible to create Twiktor ", e);
@@ -54,7 +53,7 @@ public class BotHandler {
     }
 
     private TwitTransformer createTrasformer() {
-        return new TwitTransformerSynonymizationImpl();
+        return new SearchSimularTransformer();
     }
 
     public void startBot(int id) {

@@ -1,6 +1,7 @@
 package ru.spbau.twiktor.transform;
 
 import twitter4j.Status;
+import twitter4j.Twitter;
 
 public class TwitTransformerImpl implements TwitTransformer {
     private final TransformerFactory factory = new TransformerFactory();
@@ -12,7 +13,7 @@ public class TwitTransformerImpl implements TwitTransformer {
     }
 
 	@Override
-	public String tranform(Status status) {
+	public String tranform(Status status, Twitter twitter) {
 		return tranform(getText(status));
 	}
 	

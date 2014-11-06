@@ -1,6 +1,7 @@
 package ru.spbau.twiktor.transform;
 
 import twitter4j.Status;
+import twitter4j.Twitter;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -83,7 +84,7 @@ public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
     }
 
 	@Override
-	public String tranform(Status status) {
+	public String tranform(Status status, Twitter twitter) {
 		return tranform(getText(status));
 	}
 	

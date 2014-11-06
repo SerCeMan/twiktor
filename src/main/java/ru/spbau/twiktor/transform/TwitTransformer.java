@@ -1,6 +1,7 @@
 package ru.spbau.twiktor.transform;
 
 import twitter4j.Status;
+import twitter4j.Twitter;
 
 /**
  * Трансформирует твит в похожий семантически
@@ -10,5 +11,5 @@ import twitter4j.Status;
  */
 public interface TwitTransformer {
     String tranform(String statusText);
-    String tranform(Status status);
+    String tranform(Status status, Twitter twitter);
 }

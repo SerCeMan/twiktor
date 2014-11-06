@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.spbau.twiktor.transform.TwitTransformer;
 import twitter4j.Paging;
+import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -23,18 +24,18 @@ public class Twiktor {
     private final static AtomicInteger counter = new AtomicInteger();
 	private final TwitTransformer transformer;
 	private final Twitter twitter;
-	private final String[] accounts;
+	private String[] tags;
 	private Timer timer;
 	private volatile boolean isRunning = false;
     private final int id;
     private final String login;
     private final int followersCount;
 
-    public Twiktor(String login, TwitTransformer transformer, String[] accounts, AccessToken accessToken) throws IllegalStateException, TwitterException {
+    public Twiktor(String login, TwitTransformer transformer, String[] tags, AccessToken accessToken) throws IllegalStateException, TwitterException {
         this.login = login;
         id = counter.incrementAndGet();
 		this.transformer = transformer;
-		this.accounts = accounts;
+		this.tags = tags;
 		twitter = getTwitter(accessToken);
 		long authUserId = twitter.getId();
         followersCount = twitter.users().showUser(login).getFollowersCount();
@@ -89,19 +90,22 @@ public class Twiktor {
     public int getId() {
         return id;
     }
+    
+    public void setTags(String[] tags) {
+    	this.tags = tags;
+    }
 
     private class PostStatusTask extends TimerTask {
 		
 		@Override
 		public void run() {
 			try {
-				long usedUserId;
-				usedUserId = getUserId(accounts);
-				LOG.info("User Id to process: '{}'", usedUserId);
-				Status status = getTwit(usedUserId);
+				String tag = tags[ThreadLocalRandom.current().nextInt(tags.length)];
+				LOG.info("Tag to process: '{}'", tag);
+				Status status = getTwit(tag);
 				LOG.info("Used status text is '{}'", status.getText());
 				
-				String newText = transformer.tranform(status);
+				String newText = transformer.tranform(status, twitter);
 				if(newText == null) {
 					return;
 				}
@@ -130,19 +134,10 @@ public class Twiktor {
 			return status.getUserMentionEntities()[0].getScreenName();
 		}
 
-		private Status getTwit(long usedUserId) throws TwitterException {
-			// get random status from last 1000
-			Paging paging = new Paging(1, 1000);
-			List<Status> statusList = twitter.getUserTimeline(usedUserId, paging);
+		private Status getTwit(String tag) throws TwitterException {
+			List<Status> statusList = twitter.search(new Query(tag)).getTweets();
 			Status status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
 			return status;
 		}
-
-		private long getUserId(String[] args) throws TwitterException {
-			int userIdx = ThreadLocalRandom.current().nextInt(args.length);
-			long userId = twitter.showUser(args[userIdx]).getId();
-			return userId;
-		}
-
 	}
 }
