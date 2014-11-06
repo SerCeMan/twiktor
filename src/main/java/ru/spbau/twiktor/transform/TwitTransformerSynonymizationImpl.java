@@ -1,14 +1,13 @@
 package ru.spbau.twiktor.transform;
 
-import java.io.File;
+import twitter4j.Status;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
-import twitter4j.Status;
 
 public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
 
