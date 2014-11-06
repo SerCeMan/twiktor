@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import ru.spbau.twiktor.Twiktor;
 import ru.spbau.twiktor.transform.SearchSimularTransformer;
 import ru.spbau.twiktor.transform.TwitTransformer;
+import twitter4j.Trends;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
@@ -93,7 +95,39 @@ public class BotHandler {
         themes.add(theme);
         String[] tags = themes.toArray(new String[]{});
         for(Twiktor tw: bots.values()) {
-        	tw.setTags(tags);
+            tw.setTags(tags);
+        }
+    }
+
+    public void addPopularTrend() {
+        String theme = "";
+
+        Random generator = new Random();
+        Object[] values = bots.values().toArray();
+        Twiktor randomBot = (Twiktor) values[generator.nextInt(values.length)];
+
+        if (randomBot == null)
+        {
+            return;
+        }
+
+        int moscowWoeid = 2122265;
+        Trends trends = randomBot.getTrends(moscowWoeid);
+
+        if (trends == null)
+        {
+            return;
+        }
+
+        int idx = new Random().nextInt(trends.getTrends().length);
+        theme = (trends.getTrends()[idx].getName());
+
+        if (!theme.isEmpty()) {
+            themes.add(theme);
+            String[] tags = themes.toArray(new String[themes.size()]);
+            for (Twiktor tw : bots.values()) {
+                tw.setTags(tags);
+            }
         }
     }
 

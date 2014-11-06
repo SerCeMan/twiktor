@@ -93,6 +93,13 @@
 
                         window.location.reload()
                 })'>Добавить</button>
+
+                <button style="width: 20%; margin-right: 65px; margin-top: 10px;" class="pull-right btn btn-primary"
+                        onclick='
+                        jQuery.post("/add-popular-trend", function( data ) {
+                            window.location.reload();
+                        });
+                '>Добавить популярную тему</button>
             </div>
         </div>
         <h2 style="margin-top: 55px">Ваши боты</h2>
