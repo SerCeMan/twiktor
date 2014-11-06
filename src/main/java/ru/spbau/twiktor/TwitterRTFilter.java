@@ -14,20 +14,9 @@ public class TwitterRTFilter {
 
     public String filter()
     {
-        if (textTwitter.startsWith("RT"))
-        {
-            textTwitter = textTwitter.replaceAll("^RT ?@[A-Za-z0-9]+:?", "");
-            textTwitter = textTwitter.substring(1);
-        }
+        textTwitter = textTwitter.replaceAll("RT ?@[A-Za-z0-9]+:?", "");
+        textTwitter = textTwitter.trim().replaceAll(" +", " ");
 
         return textTwitter;
-    }
-
-    public static void main(String[] args) {
-        String text = "RT @zizudyfyzesi: Путин высказался напротив попыток переписать историю";
-
-        TwitterRTFilter twitterRTFilter = new TwitterRTFilter(text);
-
-        System.out.print(twitterRTFilter.filter());
     }
 }

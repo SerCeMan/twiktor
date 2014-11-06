@@ -2,11 +2,15 @@ package ru.spbau.twiktor.transform;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.Query.ResultType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,7 +33,12 @@ public class SearchSimularTransformer implements TwitTransformer {
     }
 
     public Status searchSimular(Status to, Twitter twitter, String tag) throws TwitterException {
-        List<Status> result = twitter.search(new Query(tag)).getTweets();
+        List<Status> result = new ArrayList<>();
+        QueryResult qRes = twitter.search(new Query(tag).count(100).count(100).resultType(ResultType.recent));
+        do {
+        	result.addAll(qRes.getTweets());
+        	qRes = twitter.search(qRes.nextQuery());
+        } while(result.size() < 200 && qRes.hasNext());
 
         return result.get(ThreadLocalRandom.current().nextInt(result.size()));
     }
