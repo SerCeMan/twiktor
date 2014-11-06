@@ -124,7 +124,7 @@ public class Twiktor {
                     Status newStatus = twitter.updateStatus(newText);
                     LOG.info("Status updated. Id is '{}'", newStatus.getId());
                 }
-			} catch (TwitterException e) {
+			} catch (Exception e) {
 				LOG.error(e.getMessage());
 			}
 		}
