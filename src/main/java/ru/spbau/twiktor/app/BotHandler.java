@@ -128,6 +128,7 @@ public class BotHandler {
         for (Twiktor tw : bots.values()) {
             tw.setTags(tags);
         }
+        saveThemes();
     }
 
     public void addPopularTrend() {
