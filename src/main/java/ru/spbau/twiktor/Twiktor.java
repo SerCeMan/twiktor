@@ -13,6 +13,7 @@ import ru.spbau.twiktor.transform.TwitTransformer;
 import ru.spbau.twiktor.transform.TwitTransformerSynonymizationImpl;
 import ru.spbau.twiktor.utils.ThreadUtils;
 import twitter4j.Query;
+import twitter4j.Query.ResultType;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -151,7 +152,7 @@ public class Twiktor {
 		}
 
 		private Status getTwit(String tag) throws TwitterException {
-			List<Status> statusList = twitter.search(new Query(tag)).getTweets();
+			List<Status> statusList = twitter.search(new Query(tag).count(100).resultType(ResultType.recent)).getTweets();
 			Status status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
 			return status;
 		}
