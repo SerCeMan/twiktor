@@ -32,7 +32,7 @@ public class BotHandler {
     Authorizator authorizator;
 
     public BotHandler() {
-        themes.addAll(asList("Украина", "Путин", "Ургант"));
+        themes.addAll(asList("Ситуация на украине"));
         try {
             String login = "WiktorGrishin";
             String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";

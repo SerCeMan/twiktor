@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.spbau.twiktor.transform.TwitTransformer;
+import ru.spbau.twiktor.transform.TwitTransformerSynonymizationImpl;
 import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -105,6 +106,8 @@ public class Twiktor {
 				LOG.info("Used status text is '{}'", status.getText());
 				
 				String newText = transformer.tranform(status, twitter, tag);
+                TwitTransformer synonymization = new TwitTransformerSynonymizationImpl();
+                newText = synonymization.tranform(newText);
 				if(newText == null) {
 					return;
 				}

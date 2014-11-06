@@ -1,12 +1,14 @@
 package ru.spbau.twiktor.transform;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.spbau.twiktor.Constants;
-import twitter4j.*;
+import twitter4j.Query;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class SearchSimularTransformer implements TwitTransformer {
     private static final Logger LOG = LoggerFactory.getLogger(SearchSimularTransformer.class);

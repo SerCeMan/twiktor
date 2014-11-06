@@ -1,5 +1,7 @@
 package ru.spbau.twiktor.transform;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import twitter4j.Status;
 import twitter4j.Twitter;
 
@@ -11,6 +13,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TwitTransformerSynonymizationImpl.class);
 
     private final String synonymDictionaryPath = "./src/main/resources/baza.txt";
     private final Map<String, List<String>> synonymDictionary = new HashMap<>();
@@ -57,7 +61,7 @@ public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
         {
             throw new NullPointerException("twit");
         }
-
+        LOG.info("Synonimization, original=" + twit);
         String copyOfTwit = twit;
 
         copyOfTwit = twit.replaceAll("[^ йцукенгшщзхъфывапролджэячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮa-zA-Z0-9_-]", "");
@@ -79,7 +83,7 @@ public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
                 }
             }
         }
-
+        LOG.info("Synonimization, result=" + twit);
         return twit;
     }
 
