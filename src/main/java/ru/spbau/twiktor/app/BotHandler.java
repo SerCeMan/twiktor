@@ -95,4 +95,8 @@ public class BotHandler {
     public void addTheme(String theme) {
         themes.add(theme);
     }
+
+    public void delTheme(String theme) {
+        themes.remove(theme);
+    }
 }

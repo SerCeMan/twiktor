@@ -91,6 +91,13 @@ public class AppHandlerFactory implements HandlerFactory {
 
                         ok(context);
                     })
+                    .post("del-theme", context -> {
+                        BotHandler botHandler = chain.getRegistry().get(BotHandler.class);
+                        MultiValueMap<String, String> params = context.getRequest().getQueryParams();
+                        botHandler.delTheme(params.get("theme"));
+
+                        ok(context);
+                    })
                     .prefix("static", nested -> nested.assets("assets"))
                 );
     }

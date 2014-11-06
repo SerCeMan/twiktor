@@ -122,7 +122,7 @@ public class Twiktor {
 
                 if(needToFollow()) {
                     twitter.createFriendship(status.getUser().getId());
-                }-
+                }
 
                 if(reply) {
                     replyTwit(status, newText);

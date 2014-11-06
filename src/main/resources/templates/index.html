@@ -68,12 +68,19 @@
             <thead>
             <tr>
                 <th>Тема</th>
+                <th>Действие</th>
             </tr>
             </thead>
             <tbody>
             <% model.botHandler.themes.each { %>
                 <tr>
-                    <td>${it}</td>
+                    <td style="width: 75%">${it}</td>
+                    <td style="width: 10%">
+                   <button style="margin-left: 15px; " class="btn btn-primary"
+                    onclick='\$.post("/del-theme?theme=" + encodeURIComponent("${it}"), function( data ) {
+                        window.location.reload()
+                })'>Удалить</button>
+                    </td>
                 </tr>
             <% } %>
             </tbody>
