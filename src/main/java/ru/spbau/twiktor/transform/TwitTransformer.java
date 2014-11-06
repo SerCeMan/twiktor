@@ -11,5 +11,5 @@ import twitter4j.Twitter;
  */
 public interface TwitTransformer {
     String tranform(String statusText);
-    String tranform(Status status, Twitter twitter);
+    String tranform(Status status, Twitter twitter, String tag);
 }

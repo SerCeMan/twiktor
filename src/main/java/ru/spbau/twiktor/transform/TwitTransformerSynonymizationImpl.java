@@ -84,7 +84,7 @@ public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
     }
 
 	@Override
-	public String tranform(Status status, Twitter twitter) {
+	public String tranform(Status status, Twitter twitter, String tag) {
 		return tranform(getText(status));
 	}
 	

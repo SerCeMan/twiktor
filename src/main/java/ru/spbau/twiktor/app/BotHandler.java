@@ -25,7 +25,7 @@ public class BotHandler {
     private final static Logger LOG = LoggerFactory.getLogger(BotHandler.class);
 
     private final ConcurrentHashMap<Integer, Twiktor> bots = new ConcurrentHashMap<>();
-    private final String[] tags = {"#путин", "#россия", "#донбас"};
+//    private final String[] tags = {"#путин", "#россия", "#донбас"};
     private final List<String> themes = new ArrayList<>();
 
     @Inject
@@ -37,7 +37,7 @@ public class BotHandler {
             String login = "WiktorGrishin";
             String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
             String tokenSecret = "Y57QmqGqfh4pjkwynKIrLwcycXKNWxSDoXpom4HcvzAJ7";
-            Twiktor twiktor = new Twiktor(login, createTrasformer(), tags,
+            Twiktor twiktor = new Twiktor(login, createTrasformer(), themes.toArray(new String[]{}),
                     new AccessToken(token, tokenSecret));
             bots.put(twiktor.getId(), twiktor);
         } catch (TwitterException e) {
@@ -56,7 +56,7 @@ public class BotHandler {
     public void addBot(String login, String oauthVerifier) {
         try {
             AccessToken accessToken = authorizator.comleteAuth(login, oauthVerifier);
-            Twiktor twiktor = new Twiktor(login, createTrasformer(), tags, accessToken);
+            Twiktor twiktor = new Twiktor(login, createTrasformer(), themes.toArray(new String[]{}), accessToken);
             bots.put(twiktor.getId(), twiktor);
         } catch (TwitterException e) {
             LOG.error("Imposible to create Twiktor ", e);
