@@ -14,11 +14,8 @@ public class TwitterRTFilter {
 
     public String filter()
     {
-        if (textTwitter.startsWith("RT"))
-        {
-            textTwitter = textTwitter.replaceAll("^RT ?@[A-Za-z0-9]+:?", "");
-            textTwitter = textTwitter.substring(1);
-        }
+        textTwitter = textTwitter.replaceAll("RT ?@[A-Za-z0-9]+:?", "");
+        textTwitter = textTwitter.trim().replaceAll(" +", " ");
 
         return textTwitter;
     }
