@@ -24,6 +24,7 @@ import twitter4j.auth.AccessToken;
 public class Twiktor {
 	private final static Logger LOG = LoggerFactory.getLogger(Twiktor.class);
     private final static AtomicInteger counter = new AtomicInteger();
+	public static final int TwitterMaxLength = 140;
 	private final TwitTransformer transformer;
 	private final Twitter twitter;
 	private String[] tags;
@@ -76,7 +77,8 @@ public class Twiktor {
 	}
 	
 	public void postStatus(String text) throws TwitterException {
-		Status newStatus = twitter.updateStatus(transformer.tranform(text));
+        TwitTransformer synonimTransofrmer = new TwitTransformerSynonymizationImpl();
+		Status newStatus = twitter.updateStatus(synonimTransofrmer.tranform(text));
 		LOG.info("Status updated. Id is '{}'", newStatus.getId());
 	}
 
@@ -114,8 +116,8 @@ public class Twiktor {
 				if(newText == null) {
 					return;
 				}
-				if(newText.length() > 140) {
-					newText = newText.substring(0, 140);
+				if(newText.length() > TwitterMaxLength) {
+					newText = newText.substring(0, TwitterMaxLength);
 				}
 				LOG.info("New text is '{}'", newText);
 
@@ -137,9 +139,18 @@ public class Twiktor {
 		}
 
         private void replyTwit(Status status, String newText) throws TwitterException {
+			TwitterRTFilter twitterRTFilter = new TwitterRTFilter(newText);
+			newText = twitterRTFilter.filter();
+
             long inReply = status.getId();
             String userNameToReply = getUserName(status);
-            StatusUpdate update = new StatusUpdate("@" + userNameToReply + " " + newText);
+
+			String fullMessage = "@" + userNameToReply + " " + newText;
+			if(fullMessage.length() > TwitterMaxLength) {
+				fullMessage = fullMessage.substring(0, TwitterMaxLength);
+			}
+
+			StatusUpdate update = new StatusUpdate(fullMessage);
             update.setInReplyToStatusId(inReply);
             twitter.updateStatus(update);
         }
