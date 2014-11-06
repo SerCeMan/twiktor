@@ -1,5 +1,6 @@
 package ru.spbau.twiktor.transform;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -9,7 +10,7 @@ import java.util.*;
 
 public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
 
-    private final String synonymDictionaryPath = "C:\\Users\\Denis\\Desktop\\bs\\baza.txt";
+    private final String synonymDictionaryPath = "./src/main/resources/baza.txt";
     private final Map<String, List<String>> synonymDictionary = new HashMap<>();
 
     TwitTransformerSynonymizationImpl()
