@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,26 +20,38 @@ import twitter4j.auth.AccessToken;
 
 public class Twiktor {
 	private final static Logger LOG = LoggerFactory.getLogger(Twiktor.class);
+    private final static AtomicInteger counter = new AtomicInteger();
 	private final TwitTransformer transformer;
 	private final Twitter twitter;
 	private final String[] accounts;
 	private Timer timer;
-	private boolean isRunning;
-	
-	public Twiktor(TwitTransformer transformer, String[] accounts, AccessToken accessToken) throws IllegalStateException, TwitterException {
+	private volatile boolean isRunning = false;
+    private final int id;
+    private final String login;
+    private final int followersCount;
+
+    public Twiktor(String login, TwitTransformer transformer, String[] accounts, AccessToken accessToken) throws IllegalStateException, TwitterException {
+        this.login = login;
+        id = counter.incrementAndGet();
 		this.transformer = transformer;
 		this.accounts = accounts;
 		twitter = getTwitter(accessToken);
 		long authUserId = twitter.getId();
-		LOG.info("Twitter created. Used user id is '{}'", authUserId);
-		timer = new Timer();
-		timer.schedule(new PostStatusTask(), 0, 30000);
-		isRunning = true;
-	}
-	
+        followersCount = twitter.users().showUser(login).getFollowersCount();
+        LOG.info("Twitter created. Used user id is '{}'", authUserId);
+    }
+
+    public int getFollowersCount() {
+        return followersCount;
+    }
+
 	public boolean isRunning() {
 		return isRunning;
 	}
+
+    public String getLogin() {
+        return login;
+    }
 
 	public void start() {
 		if(isRunning) {
@@ -56,6 +69,7 @@ public class Twiktor {
 		timer.cancel();
 		timer.purge();
 		timer = null;
+        isRunning = false;
 	}
 	
 	public void postStatus(String text) throws TwitterException {
@@ -67,13 +81,16 @@ public class Twiktor {
 		TwitterFactory factory = new TwitterFactory();
 		Twitter twitter = factory.getInstance();
 		// TODO load secret
-		twitter.setOAuthConsumer("ANV7A3SBGxsUz1z4LRETSfQCZ",
-				"n82pOOT3vP9CJtRPrtm0qm7Y5DG2XXogteD1sQDezAGPGsI3bk");
+		twitter.setOAuthConsumer(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET);
 		twitter.setOAuthAccessToken(accessToken);
 		return twitter;
 	}
 
-	private class PostStatusTask extends TimerTask {
+    public int getId() {
+        return id;
+    }
+
+    private class PostStatusTask extends TimerTask {
 		
 		@Override
 		public void run() {
@@ -90,7 +107,7 @@ public class Twiktor {
 					return;
 				}
 				if(newText.length() > 140) {
-					newText.substring(0, 140);
+					newText = newText.substring(0, 140);
 				}
 				LOG.info("New text is '{}'", newText);
 				
