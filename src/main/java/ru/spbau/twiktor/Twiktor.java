@@ -170,7 +170,7 @@ public class Twiktor {
 		}
 
 		private Status getTwit(String tag) throws TwitterException {
-			List<Status> statusList = twitter.search(new Query(tag).count(100).resultType(ResultType.recent)).getTweets();
+			List<Status> statusList = twitter.search(new Query(tag).count(100).resultType(ResultType.mixed)).getTweets();
 			Status status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
 
             int tryCount = 0;
