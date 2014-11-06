@@ -1,11 +1,10 @@
 package ru.spbau.twiktor;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +31,14 @@ public class Twiktor {
     private final int id;
     private final String login;
     private final int followersCount;
+
+    private static final Map<Long, Boolean> cache = new LinkedHashMap<Long, Boolean>() {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Long, Boolean> eldest) {
+            return size() > 1000;
+        }
+    };
+
 
     public Twiktor(String login, TwitTransformer transformer, String[] tags, AccessToken accessToken) throws IllegalStateException, TwitterException {
         this.login = login;
@@ -164,6 +171,17 @@ public class Twiktor {
 		private Status getTwit(String tag) throws TwitterException {
 			List<Status> statusList = twitter.search(new Query(tag)).getTweets();
 			Status status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
+
+            int tryCount = 0;
+            while (cache.containsKey(status.getId())) {
+                tryCount++;
+                status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
+                if(tryCount > 10) {
+                    throw new RuntimeException("Error, too many repeated tweets with tag " + tag);
+                }
+            }
+            cache.put(status.getId(), Boolean.TRUE);
+
 			return status;
 		}
 	}
