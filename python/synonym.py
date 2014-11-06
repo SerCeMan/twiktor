@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 
 import random
+import re
 import pymorphy2
-morph = pymorphy2.MorphAnalyzer()
     
 def setForm(wordToChange, wordWithForm):
+    morph = pymorphy2.MorphAnalyzer()
     for form in morph.parse(wordToChange)[0].lexeme:
         if form.tag == morph.parse(wordWithForm)[0].tag:
             return form.word
     return wordWithForm
             
 def generateSentence(sentence, dictionary):
+    morph = pymorphy2.MorphAnalyzer()
+    #Зачем ждать? Задайте нам вопрос прямо сейчас. Мы отвечаем круглосуточно на 10 языках
+    sentence = re.sub('!?.,', '', sentence)
+    
     words = sentence.rstrip().split(" ")
     answer = ""
     for word in words:
