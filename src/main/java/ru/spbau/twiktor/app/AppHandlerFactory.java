@@ -91,6 +91,13 @@ public class AppHandlerFactory implements HandlerFactory {
 
                         ok(context);
                     })
+                    .post("add-popular-trend", context -> {
+                        BotHandler botHandler = chain.getRegistry().get(BotHandler.class);
+                        MultiValueMap<String, String> params = context.getRequest().getQueryParams();
+                        botHandler.addPopularTrend();
+
+                        ok(context);
+                    })
                     .post("del-theme", context -> {
                         BotHandler botHandler = chain.getRegistry().get(BotHandler.class);
                         MultiValueMap<String, String> params = context.getRequest().getQueryParams();
