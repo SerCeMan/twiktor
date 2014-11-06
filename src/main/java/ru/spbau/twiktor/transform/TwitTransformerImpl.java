@@ -13,7 +13,7 @@ public class TwitTransformerImpl implements TwitTransformer {
 
 	@Override
 	public String tranform(Status status) {
-		return getText(status);
+		return tranform(getText(status));
 	}
 	
 	private String getText(Status status) {

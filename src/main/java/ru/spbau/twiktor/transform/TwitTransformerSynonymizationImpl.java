@@ -14,7 +14,7 @@ public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
     private final String synonymDictionaryPath = "./src/main/resources/baza.txt";
     private final Map<String, List<String>> synonymDictionary = new HashMap<>();
 
-    TwitTransformerSynonymizationImpl()
+    public TwitTransformerSynonymizationImpl()
     {
         Path original = Paths.get(synonymDictionaryPath);
 

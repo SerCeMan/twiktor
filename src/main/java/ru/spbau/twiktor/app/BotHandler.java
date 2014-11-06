@@ -2,11 +2,14 @@ package ru.spbau.twiktor.app;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import ru.spbau.twiktor.Twiktor;
 import ru.spbau.twiktor.transform.TwitTransformer;
 import ru.spbau.twiktor.transform.TwitTransformerImpl;
+import ru.spbau.twiktor.transform.TwitTransformerSynonymizationImpl;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
@@ -51,7 +54,7 @@ public class BotHandler {
     }
 
     private TwitTransformer createTrasformer() {
-        return new TwitTransformerImpl();
+        return new TwitTransformerSynonymizationImpl();
     }
 
     public void startBot(int id) {
