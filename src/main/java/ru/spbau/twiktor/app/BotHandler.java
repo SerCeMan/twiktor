@@ -12,8 +12,13 @@ import ru.spbau.twiktor.transform.TwitTransformer;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Arrays.asList;
 
 @Singleton
 public class BotHandler {
@@ -21,11 +26,13 @@ public class BotHandler {
 
     private final ConcurrentHashMap<Integer, Twiktor> bots = new ConcurrentHashMap<>();
     private final String[] tags = {"#путин", "#россия", "#донбас"};
+    private final List<String> themes = new ArrayList<>();
 
     @Inject
     Authorizator authorizator;
 
     public BotHandler() {
+        themes.addAll(asList("Украина", "Путин", "Ургант"));
         try {
             String login = "WiktorGrishin";
             String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
@@ -36,6 +43,10 @@ public class BotHandler {
         } catch (TwitterException e) {
             LOG.error("Imposible to create Twiktor ", e);
         }
+    }
+
+    public List<String> getThemes() {
+        return themes;
     }
 
     public String beginAuth(String login) {
@@ -79,5 +90,9 @@ public class BotHandler {
 
     public Collection<Twiktor> getAllTwiktors() {
         return bots.values();
+    }
+
+    public void addTheme(String theme) {
+        themes.add(theme);
     }
 }
