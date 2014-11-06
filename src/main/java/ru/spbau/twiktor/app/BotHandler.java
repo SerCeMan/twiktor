@@ -12,9 +12,11 @@ import ru.spbau.twiktor.transform.TwitTransformer;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
@@ -31,6 +33,7 @@ public class BotHandler {
 
     public BotHandler() {
         try {
+            loadThemes();
             String login = "WiktorGrishin";
             String token = "2862320699-yn8rZdX4g4wWFwnMm4BLdVgZ91kT8iAAiCLtYJB";
             String tokenSecret = "Y57QmqGqfh4pjkwynKIrLwcycXKNWxSDoXpom4HcvzAJ7";
@@ -39,6 +42,16 @@ public class BotHandler {
             bots.put(twiktor.getId(), twiktor);
         } catch (TwitterException e) {
             LOG.error("Imposible to create Twiktor ", e);
+        }
+    }
+
+    private void loadThemes() {
+        try(InputStream input = new FileInputStream("themes.txt")) {
+            InputStreamReader reader = new InputStreamReader(input);
+            Scanner scanner = new Scanner(reader);
+            scanner.forEachRemaining(themes::add);
+        } catch (Exception e) {
+            LOG.error("Error load themes ", e);
         }
     }
 
@@ -95,9 +108,25 @@ public class BotHandler {
         for(Twiktor tw: bots.values()) {
         	tw.setTags(tags);
         }
+        saveThemes();
+    }
+
+    private void saveThemes() {
+        try(FileOutputStream out = new FileOutputStream("themes.txt")) {
+            PrintWriter writer = new PrintWriter(out);
+            themes.forEach(writer::println);
+            writer.flush();
+        } catch (Exception e) {
+            LOG.error("Error saving themes ", e);
+        }
     }
 
     public void delTheme(String theme) {
         themes.remove(theme);
+        String[] tags = themes.toArray(new String[]{});
+        for(Twiktor tw: bots.values()) {
+            tw.setTags(tags);
+        }
+        saveThemes();
     }
 }
