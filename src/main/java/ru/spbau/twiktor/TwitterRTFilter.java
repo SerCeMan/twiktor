@@ -22,12 +22,4 @@ public class TwitterRTFilter {
 
         return textTwitter;
     }
-
-    public static void main(String[] args) {
-        String text = "RT @zizudyfyzesi: Путин высказался напротив попыток переписать историю";
-
-        TwitterRTFilter twitterRTFilter = new TwitterRTFilter(text);
-
-        System.out.print(twitterRTFilter.filter());
-    }
 }
