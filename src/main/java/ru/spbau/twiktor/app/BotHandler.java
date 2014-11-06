@@ -39,7 +39,7 @@ public class BotHandler {
     }
 
     private void loadThemes() {
-        try(InputStream input = new FileInputStream("themes.txt")) {
+        try (InputStream input = new FileInputStream("themes.txt")) {
             InputStreamReader reader = new InputStreamReader(input);
             Scanner scanner = new Scanner(reader);
             scanner.forEachRemaining(themes::add);
@@ -49,11 +49,11 @@ public class BotHandler {
     }
 
     private void loadBots() {
-        try(InputStream input = new FileInputStream("twiktors.txt")) {
+        try (InputStream input = new FileInputStream("twiktors.txt")) {
             InputStreamReader reader = new InputStreamReader(input);
             Scanner scanner = new Scanner(reader);
             int count = Integer.valueOf(scanner.nextLine());
-            for(int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++) {
                 String login = scanner.nextLine();
                 String token = scanner.nextLine();
                 String tokenSecret = scanner.nextLine();
@@ -82,6 +82,10 @@ public class BotHandler {
         try {
             AccessToken accessToken = authorizator.comleteAuth(login, oauthVerifier);
             Twiktor twiktor = new Twiktor(login, createTrasformer(), themes.toArray(new String[]{}), accessToken);
+            bots.values().forEach(bot -> {
+                bot.follow(login);
+                twiktor.follow(bot.getLogin());
+            });
             bots.put(twiktor.getId(), twiktor);
         } catch (TwitterException e) {
             LOG.error("Imposible to create Twiktor ", e);
@@ -121,7 +125,7 @@ public class BotHandler {
     public void addTheme(String theme) {
         themes.add(theme);
         String[] tags = themes.toArray(new String[]{});
-        for(Twiktor tw: bots.values()) {
+        for (Twiktor tw : bots.values()) {
             tw.setTags(tags);
         }
     }
@@ -133,16 +137,14 @@ public class BotHandler {
         Object[] values = bots.values().toArray();
         Twiktor randomBot = (Twiktor) values[generator.nextInt(values.length)];
 
-        if (randomBot == null)
-        {
+        if (randomBot == null) {
             return;
         }
 
         int moscowWoeid = 2122265;
         Trends trends = randomBot.getTrends(moscowWoeid);
 
-        if (trends == null)
-        {
+        if (trends == null) {
             return;
         }
 
@@ -160,7 +162,7 @@ public class BotHandler {
     }
 
     private void saveThemes() {
-        try(FileOutputStream out = new FileOutputStream("themes.txt")) {
+        try (FileOutputStream out = new FileOutputStream("themes.txt")) {
             PrintWriter writer = new PrintWriter(out);
             themes.forEach(writer::println);
             writer.flush();
@@ -170,7 +172,7 @@ public class BotHandler {
     }
 
     private void saveTwiktors() {
-        try(FileOutputStream out = new FileOutputStream("twiktors.txt")) {
+        try (FileOutputStream out = new FileOutputStream("twiktors.txt")) {
             PrintWriter writer = new PrintWriter(out);
             writer.println(bots.values().size());
             bots.values().forEach(bot -> {
@@ -187,7 +189,7 @@ public class BotHandler {
     public void delTheme(String theme) {
         themes.remove(theme);
         String[] tags = themes.toArray(new String[]{});
-        for(Twiktor tw: bots.values()) {
+        for (Twiktor tw : bots.values()) {
             tw.setTags(tags);
         }
         saveThemes();

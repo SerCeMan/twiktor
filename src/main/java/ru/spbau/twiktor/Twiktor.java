@@ -112,6 +112,14 @@ public class Twiktor {
     	this.tags = tags;
     }
 
+    public void follow(String login) {
+        try {
+            twitter.createFriendship(login);
+        } catch (TwitterException e) {
+            LOG.error("Can not to follow " + login);
+        }
+    }
+
     private class PostStatusTask extends TimerTask {
 		
 		@Override
