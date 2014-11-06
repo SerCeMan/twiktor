@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import twitter4j.Status;
+
 public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
 
     private final String synonymDictionaryPath = "./src/main/resources/baza.txt";
@@ -80,4 +82,17 @@ public class TwitTransformerSynonymizationImpl implements TwitTransformer  {
 
         return twit;
     }
+
+	@Override
+	public String tranform(Status status) {
+		return getText(status);
+	}
+	
+	private String getText(Status status) {
+		if(!status.isRetweet()) {
+			return status.getText();
+		}
+		int columnPos = status.getText().indexOf(':');
+		return status.getText().substring(columnPos + 1);
+	}
 }

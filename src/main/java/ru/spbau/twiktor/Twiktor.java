@@ -99,10 +99,9 @@ public class Twiktor {
 				usedUserId = getUserId(accounts);
 				LOG.info("User Id to process: '{}'", usedUserId);
 				Status status = getTwit(usedUserId);
-				String statusText = getText(status);
-				LOG.info("Used status text is '{}'", statusText);
+				LOG.info("Used status text is '{}'", status.getText());
 				
-				String newText = transformer.tranform(statusText);
+				String newText = transformer.tranform(status);
 				if(newText == null) {
 					return;
 				}
@@ -129,14 +128,6 @@ public class Twiktor {
 				return status.getUser().getScreenName();
 			}
 			return status.getUserMentionEntities()[0].getScreenName();
-		}
-
-		private String getText(Status status) {
-			if(!status.isRetweet()) {
-				return status.getText();
-			}
-			int columnPos = status.getText().indexOf(':');
-			return status.getText().substring(columnPos + 1);
 		}
 
 		private Status getTwit(long usedUserId) throws TwitterException {
