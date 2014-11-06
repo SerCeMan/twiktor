@@ -115,21 +115,29 @@ public class Twiktor {
 					newText = newText.substring(0, 140);
 				}
 				LOG.info("New text is '{}'", newText);
-				
-				long inReply = status.getId();
-				String userNameToReply = getUserName(status);
-				StatusUpdate update = new StatusUpdate("@" + userNameToReply + " " + newText);
-				update.setInReplyToStatusId(inReply);
-				twitter.updateStatus(update);
-				
-				Status newStatus = twitter.updateStatus(newText);
-				LOG.info("Status updated. Id is '{}'", newStatus.getId());
+
+                boolean reply = ThreadLocalRandom.current().nextBoolean();
+
+                if(reply) {
+                    replyTwit(status, newText);
+                } else {
+                    Status newStatus = twitter.updateStatus(newText);
+                    LOG.info("Status updated. Id is '{}'", newStatus.getId());
+                }
 			} catch (TwitterException e) {
 				LOG.error(e.getMessage());
 			}
 		}
-		
-		private String getUserName(Status status) {
+
+        private void replyTwit(Status status, String newText) throws TwitterException {
+            long inReply = status.getId();
+            String userNameToReply = getUserName(status);
+            StatusUpdate update = new StatusUpdate("@" + userNameToReply + " " + newText);
+            update.setInReplyToStatusId(inReply);
+            twitter.updateStatus(update);
+        }
+
+        private String getUserName(Status status) {
 			if(!status.isRetweet()) {
 				return status.getUser().getScreenName();
 			}
