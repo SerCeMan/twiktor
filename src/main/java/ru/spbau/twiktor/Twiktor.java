@@ -75,7 +75,8 @@ public class Twiktor {
 	}
 	
 	public void postStatus(String text) throws TwitterException {
-		Status newStatus = twitter.updateStatus(transformer.tranform(text));
+        TwitTransformer synonimTransofrmer = new TwitTransformerSynonymizationImpl();
+		Status newStatus = twitter.updateStatus(synonimTransofrmer.tranform(text));
 		LOG.info("Status updated. Id is '{}'", newStatus.getId());
 	}
 
