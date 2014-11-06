@@ -42,7 +42,12 @@ public class BotHandler {
         try (InputStream input = new FileInputStream("themes.txt")) {
             InputStreamReader reader = new InputStreamReader(input);
             Scanner scanner = new Scanner(reader);
-            scanner.forEachRemaining(themes::add);
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+                if(line != null && !line.isEmpty()) {
+                    themes.add(line);
+                }
+            }
         } catch (Exception e) {
             LOG.error("Error load themes ", e);
         }
