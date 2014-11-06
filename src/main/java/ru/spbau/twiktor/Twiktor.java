@@ -130,9 +130,18 @@ public class Twiktor {
 		}
 
         private void replyTwit(Status status, String newText) throws TwitterException {
+			TwitterRTFilter twitterRTFilter = new TwitterRTFilter(newText);
+			newText = twitterRTFilter.filter();
+
             long inReply = status.getId();
             String userNameToReply = getUserName(status);
-            StatusUpdate update = new StatusUpdate("@" + userNameToReply + " " + newText);
+
+			String fullMessage = "@" + userNameToReply + " " + newText;
+			if(fullMessage.length() > 140) {
+				fullMessage = fullMessage.substring(0, 140);
+			}
+
+			StatusUpdate update = new StatusUpdate(fullMessage);
             update.setInReplyToStatusId(inReply);
             twitter.updateStatus(update);
         }
