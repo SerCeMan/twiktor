@@ -97,11 +97,11 @@
 
         <div style="margin-top: 55px" class="form-inline">
             <div id="addApp" class="form-inline add-app-form" style="display: block;">
-                <input id="login" class="form-control" style="width: 40%" type="text" placeholder="Логин">
-                <input id="password" class="form-control" style="width: 40%" type="text" placeholder="Пароль">
-                <button style="margin-left: 20px; width: 15%" class="btn btn-primary"
-                        onclick='\$.post("/add-bot?login=" + \$("#login").val() +"&\$password=" +  \$("#password").val(), function( data ) {
-                    window.location.reload()
+                <input id="login" class="form-control" style="width: 60%" type="text" placeholder="Логин">
+                <button style="margin-left: 45px; width: 20%" class="btn btn-primary"
+                        onclick='\$.post("/begin-auth?login=" + \$("#login").val(), function( data ) {
+
+                        window.open(data + "","_self")
                 })'>Добавить</button>
             </div>
         </div>
@@ -112,7 +112,7 @@
             <div id="addApp" class="form-inline add-app-form" style="display: block;">
                 <textarea id="message" class="form-control" style="width: 70%" placeholder="Текст"></textarea>
                 <button style="margin-left: 20px; width: 25%" class="btn btn-primary"
-                        onclick='\$.post("/send-all?message=" + \$("#message").val())'>Отправить всемs</button>
+                        onclick='\$.post("/send-all?message=" + \$("#message").val())'>Отправить всем</button>
             </div>
         </div>
 
@@ -141,6 +141,7 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="static/js/bootstrap.min.js"></script>
+
 
 </body>
 

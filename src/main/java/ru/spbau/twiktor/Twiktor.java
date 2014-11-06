@@ -81,8 +81,7 @@ public class Twiktor {
 		TwitterFactory factory = new TwitterFactory();
 		Twitter twitter = factory.getInstance();
 		// TODO load secret
-		twitter.setOAuthConsumer("ANV7A3SBGxsUz1z4LRETSfQCZ",
-				"n82pOOT3vP9CJtRPrtm0qm7Y5DG2XXogteD1sQDezAGPGsI3bk");
+		twitter.setOAuthConsumer(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET);
 		twitter.setOAuthAccessToken(accessToken);
 		return twitter;
 	}
