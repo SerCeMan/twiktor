@@ -133,7 +133,10 @@ public class Twiktor {
 				
 				String newText = transformer.tranform(status, twitter, tag);
                 TwitTransformer synonymization = new TwitTransformerSynonymizationImpl();
-                newText = synonymization.tranform(newText);
+                if(ThreadLocalRandom.current().nextInt(4) == 0) {
+                    // повысил качество на ночь
+                    newText = synonymization.tranform(newText);
+                }
 				if(newText == null) {
 					return;
 				}
@@ -148,7 +151,8 @@ public class Twiktor {
                     twitter.createFriendship(status.getUser().getId());
                 }
 
-                if(reply) {
+                // сделал ответы чуть чаще
+                if(reply || ThreadLocalRandom.current().nextInt(4) == 1) {
                     replyTwit(status, newText);
                 } else {
                     Status newStatus = twitter.updateStatus(newText);
