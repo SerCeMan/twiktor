@@ -19,6 +19,10 @@ def generateSentence(sentence, dictionary):
     words = sentence.rstrip().split(" ")
     answer = ""
     for word in words:
+        if "PREP" in morph.parse(word)[0].tag:
+            answer += word + " "
+            continue
+        
         normal_form = morph.parse(word)[0].normal_form
         synonym = ""
         if normal_form in dictionary:
@@ -30,7 +34,7 @@ def generateSentence(sentence, dictionary):
             answer += synonym + " "
         else:
             answer += setForm(synonym, word) + " "
-    return answer
+    return answer[:-1]
 
 dictionary = {}
 lines = open("Synonym.txt").readlines()
@@ -42,3 +46,6 @@ sentence = input().rstrip()
 #sentence = "Я никогда еще не пробовал такого вкусного варенья"
 newSentence = generateSentence(sentence, dictionary)
 print(newSentence)
+
+#morph = pymorphy2.MorphAnalyzer()
+#print(morph.parse("на")[0].tag)
