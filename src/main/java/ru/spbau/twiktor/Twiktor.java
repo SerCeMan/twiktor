@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +112,14 @@ public class Twiktor {
     	this.tags = tags;
     }
 
+    public void follow(String login) {
+        try {
+            twitter.createFriendship(login);
+        } catch (TwitterException e) {
+            LOG.error("Can not to follow " + login);
+        }
+    }
+
     private class PostStatusTask extends TimerTask {
 		
 		@Override
@@ -126,7 +133,10 @@ public class Twiktor {
 				
 				String newText = transformer.tranform(status, twitter, tag);
                 TwitTransformer synonymization = new TwitTransformerSynonymizationImpl();
-                newText = synonymization.tranform(newText);
+                if(ThreadLocalRandom.current().nextInt(4) == 0) {
+                    // повысил качество на ночь
+                    newText = synonymization.tranform(newText);
+                }
 				if(newText == null) {
 					return;
 				}
@@ -141,7 +151,8 @@ public class Twiktor {
                     twitter.createFriendship(status.getUser().getId());
                 }
 
-                if(reply) {
+                // сделал ответы чуть чаще
+                if(reply || ThreadLocalRandom.current().nextInt(4) == 1) {
                     replyTwit(status, newText);
                 } else {
                     Status newStatus = twitter.updateStatus(newText);
