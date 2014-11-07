@@ -151,6 +151,10 @@ public class Twiktor {
                     twitter.createFriendship(status.getUser().getId());
                 }
 
+                if(ThreadLocalRandom.current().nextInt(5) == 0) {
+                    twitter.createFavorite(status.getId());
+                }
+
                 // сделал ответы чуть чаще
                 if(reply || ThreadLocalRandom.current().nextInt(4) == 1) {
                     replyTwit(status, newText);
