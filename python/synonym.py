@@ -14,7 +14,10 @@ def setForm(wordToChange, wordWithForm):
 def generateSentence(sentence, dictionary):
     morph = pymorphy2.MorphAnalyzer()
     #Зачем ждать? Задайте нам вопрос прямо сейчас. Мы отвечаем круглосуточно на 10 языках
-    sentence = re.sub('!?.,', '', sentence)
+    sentence = sentence.replace(',', '')
+    sentence = sentence.replace('.', '')
+    sentence = sentence.replace('?', '')
+    sentence = sentence.replace('!', '')
     
     words = sentence.rstrip().split(" ")
     answer = ""
