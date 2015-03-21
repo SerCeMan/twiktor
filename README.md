@@ -1,5 +1,6 @@
 Twiktor
 =======
+[![SA status](http://ninebugs.cloudapp.net/result/SerCeMan/twiktor)](http://ninebugs.cloudapp.net/repo/SerCeMan/twiktor)
 
 Twiktor - проект на хакатон в СПбАУ. 
 
