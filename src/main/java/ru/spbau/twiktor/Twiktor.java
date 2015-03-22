@@ -200,7 +200,7 @@ public class Twiktor {
                 tryCount++;
                 status = statusList.get(ThreadLocalRandom.current().nextInt(statusList.size()));
                 if(tryCount > 10) {
-                    throw new RuntimeException("Error, too many repeated tweets with tag " + tag);
+                    throw new RuntimeException("Error, too many repeated tweets with tag " + (tag));
                 }
             }
             cache.put(status.getId(), Boolean.TRUE);
